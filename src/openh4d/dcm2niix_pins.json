@@ -1,0 +1,22 @@
+{
+  "tag": "v1.0.20260724",
+  "source": "https://github.com/rordenlab/dcm2niix/releases",
+  "note": "Regenerate with: python -m openh4d.fetch_dcm2niix --update-pins --all-platforms --tag <tag>. Review the diff in a pull request -- GitHub release assets are mutable, so a change here is a signal, not a formality.",
+  "assets": {
+    "win": {
+      "name": "dcm2niix_win.zip",
+      "sha256": "8310549ef7340b1b169c26f4721aeac69423fd73643fbbd22eec47b36cc70ada",
+      "size": 1196271
+    },
+    "lnx": {
+      "name": "dcm2niix_lnx.zip",
+      "sha256": "2916a7bc64511eb20fb976a994799183cc1bfdd03395bf5d8edef54a58dee06f",
+      "size": 947680
+    },
+    "mac": {
+      "name": "dcm2niix_mac.zip",
+      "sha256": "d393006dd1edfba4013bc4b8eccc875b23d611ecbc53fda5a5542f629591008f",
+      "size": 930002
+    }
+  }
+}

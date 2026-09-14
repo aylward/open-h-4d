@@ -1,0 +1,60 @@
+{
+  "schema": "openh-4d/patient/1.0",
+  "patient_id": "STAN-0001",
+  "studies": ["STAN-0001A", "STAN-0001B"],
+
+  "demographics": {
+    "age_years": 62,
+    "age_90_or_older": false,
+    "sex": "F",
+    "gender": null,
+    "height_cm": 168,
+    "weight_kg": 71.5,
+    "bmi": 25.3,
+    "ethnicity": null
+  },
+
+  "disease_state": {
+    "primary_diagnosis": "Tetralogy of Fallot, status post repair",
+    "codes": [{ "system": "ICD-10", "code": "Q21.3" }],
+    "severity": null,
+    "comorbidities": ["COPD"],
+    "notes": ""
+  },
+
+  "vitals_at_acquisition": {
+    "systolic_bp_mmhg": 118,
+    "diastolic_bp_mmhg": 74,
+    "heart_rate_bpm": 72,
+    "respiratory_rate_bpm": 14,
+    "spo2_percent": 98,
+    "temperature_c": null,
+    "measured_relative_to_scan": "before"
+  },
+
+  "treatment_history": [
+    {
+      "type": "surgery",
+      "description": "Valve-sparing root replacement",
+      "timing": "pre_scan",
+      "days_relative_to_scan": -420,
+      "notes": ""
+    }
+  ],
+
+  "reason_for_scan": {
+    "category": "surgical_planning",
+    "description": "Pre-operative planning for truncal valve repair"
+  },
+
+  "deidentification": {
+    "standard": "hipaa_safe_harbor",
+    "date_shift_applied": true,
+    "date_shift_offset_disclosed": false,
+    "performed_by": "contributor",
+    "tooling": "RSNA CTP DicomAnonymizer",
+    "attestation": "All 18 HIPAA Safe Harbor identifiers removed or generalized."
+  },
+
+  "extra": {}
+}

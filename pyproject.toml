@@ -1,0 +1,50 @@
+[project]
+name = "openh-4d"
+version = "0.1.0"
+description = "Tooling, layout specification, and examples for the OpenH-4D open 4D cardiac and respiratory imaging dataset initiative."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.11"
+authors = [
+    { name = "OpenH-4D Contributors" },
+]
+dependencies = [
+    "numpy>=1.26",
+    "pydicom>=3.0",
+    "nibabel>=5.2",
+    "SimpleITK>=2.4",
+    "jsonschema>=4.21",
+    "requests>=2.32",
+]
+
+[project.optional-dependencies]
+test = ["pytest", "ruff"]
+
+[project.scripts]
+openh4d = "openh4d.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/open-h/open-h-4d"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+openh4d = ["schemas/*.json", "*.json"]
+
+[tool.ruff]
+line-length = 100
+indent-width = 4
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.pytest.ini_options]
+markers = [
+    "heavy: marks tests requiring network, GPU, or large downloads (deselect with '-m \"not heavy\"')",
+    "network: marks tests that reach the network even when small (deselect with '-m \"not network\"')",
+]

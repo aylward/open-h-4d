@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://open-h.org/openh-4d/schemas/manifest/1.0",
+  "title": "OpenH-4D manifest.json",
+  "description": "Generated index of a submission, living at the submission root. Hashes cover the JSON sidecars only: metadata is what silently drifts, and hashing multi-gigabyte image data on every verification run would make the verifier unusable. Use checksums.sha256 when transfer integrity is in question.",
+  "type": "object",
+  "required": ["schema", "generated_by", "generated_at", "counts", "patients"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "openh-4d/manifest/1.0" },
+    "submission_id": { "type": ["string", "null"] },
+    "contributor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "organization": { "type": ["string", "null"] },
+        "contact": { "type": ["string", "null"] },
+        "proposal_id": { "type": ["string", "null"] }
+      }
+    },
+    "generated_by": { "type": "string" },
+    "generated_at": { "type": "string" },
+
+    "counts": {
+      "type": "object",
+      "required": ["patients", "studies", "timepoints", "bytes"],
+      "additionalProperties": false,
+      "properties": {
+        "patients": { "type": "integer", "minimum": 0 },
+        "studies": { "type": "integer", "minimum": 0 },
+        "timepoints": { "type": "integer", "minimum": 0 },
+        "bytes": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "modality_breakdown": {
+      "type": "object",
+      "additionalProperties": { "type": "integer", "minimum": 0 }
+    },
+    "organ_breakdown": {
+      "type": "object",
+      "additionalProperties": { "type": "integer", "minimum": 0 }
+    },
+
+    "patients": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["patient_id", "studies"],
+        "additionalProperties": false,
+        "properties": {
+          "patient_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9-]{1,46}[0-9]$" },
+          "ehr_dir": { "type": ["string", "null"] },
+          "patient_json_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+          "studies": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["study_id", "modality", "organ", "file_layout", "n_timepoints", "bytes"],
+              "additionalProperties": false,
+              "properties": {
+                "study_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9-]{1,46}[0-9][A-Z]+$" },
+                "modality": { "enum": ["CT", "MR", "US"] },
+                "organ": { "enum": ["heart", "lung"] },
+                "file_layout": { "enum": ["timepoint_volumes", "dicom_phases", "single_4d"] },
+                "n_timepoints": { "type": "integer", "minimum": 2 },
+                "bytes": { "type": "integer", "minimum": 0 },
+                "study_json_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
