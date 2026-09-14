@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://open-h.org/openh-4d/schemas/study/1.0",
+  "title": "OpenH-4D study.json",
+  "description": "Metadata for one 4D study, living at <study_dir>/study.json. Fields follow OpenH-4D RFP section 8 (Data Details and Modality specifics).",
+  "type": "object",
+  "required": [
+    "schema", "study_id", "patient_id", "modality", "organ", "motion",
+    "file_layout", "n_timepoints", "timepoints", "coverage", "geometry"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "openh-4d/study/1.0" },
+    "study_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9-]{1,46}[0-9][A-Z]+$" },
+    "patient_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9-]{1,46}[0-9]$" },
+
+    "modality": { "enum": ["CT", "MR", "US"] },
+    "organ": { "enum": ["heart", "lung"] },
+    "motion": { "enum": ["cardiac", "respiratory", "both"] },
+    "protocol": { "type": ["string", "null"], "description": "e.g. Retrospectively ECG-gated 4D CT, or MRI cine." },
+    "clinical_indication": { "type": ["string", "null"], "description": "Why the scan was clinically acquired." },
+
+    "file_layout": {
+      "enum": ["timepoint_volumes", "dicom_phases", "single_4d"],
+      "description": "timepoint_volumes = one t0000.nii.gz per time point (canonical); dicom_phases = one dicom/t0000/ per time point (canonical); single_4d = one image4d.nii.gz (accepted fallback)."
+    },
+    "multiframe": {
+      "type": "boolean",
+      "description": "Only with dicom_phases: the source is enhanced/multi-frame DICOM, so dicom/ holds container files directly with no per-time-point subdirectories."
+    },
+    "derived_from_dicom": {
+      "type": "boolean",
+      "description": "Set when per-time-point NIfTI files sit alongside a retained dicom/ tree, which is the normal result of organize followed by convert."
+    },
+
+    "n_timepoints": { "type": "integer", "minimum": 2 },
+    "timepoints": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["index", "file"],
+        "additionalProperties": false,
+        "properties": {
+          "index": { "type": "integer", "minimum": 0 },
+          "file": { "type": "string" },
+          "phase_label": { "type": ["string", "null"], "description": "Verbatim source label, for example 0.0% or 50%." },
+          "phase_type": { "enum": ["cardiac", "respiratory", "none", null] },
+          "phase_fraction": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+          "trigger_time_ms": { "type": ["number", "null"] },
+          "acquisition_time_s": { "type": ["number", "null"] }
+        }
+      }
+    },
+
+    "coverage": { "enum": ["full", "partial"] },
+    "coverage_notes": { "type": "string" },
+    "contrast": {
+      "type": "object",
+      "required": ["used"],
+      "additionalProperties": false,
+      "properties": {
+        "used": { "type": ["boolean", "null"] },
+        "agent": { "type": ["string", "null"] },
+        "phase": { "type": ["string", "null"] }
+      }
+    },
+
+    "geometry": {
+      "type": "object",
+      "required": ["in_plane_mm", "slice_spacing_mm", "matrix"],
+      "additionalProperties": false,
+      "properties": {
+        "in_plane_mm": {
+          "type": "array", "minItems": 2, "maxItems": 2,
+          "items": { "type": "number", "exclusiveMinimum": 0 }
+        },
+        "slice_spacing_mm": { "type": "number", "exclusiveMinimum": 0 },
+        "matrix": {
+          "type": "array", "minItems": 3, "maxItems": 3,
+          "items": { "type": "integer", "minimum": 1 }
+        },
+        "temporal_resolution_ms": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "orientation": { "type": ["string", "null"], "description": "Axis code actually written into the NIfTI affine, for example RAS or LPS." }
+      }
+    },
+
+    "ct": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "low_dose": { "type": ["boolean", "null"] },
+        "kvp": { "type": ["number", "null"] },
+        "exposure_mas": { "type": ["number", "null"] },
+        "recon_kernel": { "type": ["string", "null"] }
+      }
+    },
+    "mr": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sequence": { "type": ["string", "null"] },
+        "field_strength_t": { "type": ["number", "null"] },
+        "tr_ms": { "type": ["number", "null"] },
+        "te_ms": { "type": ["number", "null"] },
+        "other_sequences_included": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "us": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": { "enum": ["4d_tee", "4d_percutaneous", "other", null] },
+        "probe": { "type": ["string", "null"] },
+        "frame_rate_hz": { "type": ["number", "null"] },
+        "vendor_decoder": { "type": ["string", "null"], "description": "Name and version of the decoder used, when the source was vendor private-tag 4D echo." }
+      }
+    },
+
+    "gating": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "enum": [
+            "retrospective_ecg", "prospective_ecg", "respiratory_belt", "navigator",
+            "surrogate_marker", "none", "unknown", null
+          ]
+        },
+        "phase_source": {
+          "type": ["string", "null"],
+          "description": "Which heuristic recovered the time points, for example TemporalPositionIdentifier or SeriesDescription."
+        }
+      }
+    },
+
+    "annotations": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "segmentations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["set", "files", "method"],
+            "additionalProperties": false,
+            "properties": {
+              "set": { "type": "string" },
+              "files": { "type": "string", "description": "Glob relative to the study directory." },
+              "method": { "enum": ["human", "semi_automatic", "automatic", "derived"] },
+              "labels_file": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "landmarks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["set", "files"],
+            "additionalProperties": false,
+            "properties": {
+              "set": { "type": "string" },
+              "files": { "type": "string" },
+              "method": { "enum": ["human", "semi_automatic", "automatic", "derived", null] }
+            }
+          }
+        },
+        "categorizations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "value"],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string" },
+              "value": { "type": ["string", "number", "boolean"] },
+              "method": { "enum": ["human", "semi_automatic", "automatic", "derived", null] }
+            }
+          }
+        }
+      }
+    },
+
+    "derived": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "description"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      },
+      "description": "Anything under the derived/ subdirectory must be declared here, or verify_layout flags it."
+    },
+
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "original_format": { "type": ["string", "null"] },
+        "converter": { "type": ["string", "null"] },
+        "converter_args": { "type": ["string", "null"] },
+        "converted_at": { "type": ["string", "null"] },
+        "n_source_files": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+
+    "waivers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rule", "justification"],
+        "additionalProperties": false,
+        "properties": {
+          "rule": { "type": "string", "description": "A conformance rule id from openh4d.conformance." },
+          "justification": { "type": "string", "minLength": 1 }
+        }
+      },
+      "description": "An accepted waiver downgrades its conformance rule from error to warning. The min_timepoints rule can never be waived."
+    },
+    "notes": { "type": "string" }
+  }
+}

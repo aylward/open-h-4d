@@ -1,0 +1,79 @@
+{
+  "note": "Tags that survive when OpenH-4D retains DICOM in a submission. Everything not listed here is dropped. This is an allowlist, not a blocklist, because the set of tags a vendor can hide PHI in is open-ended while the set 4D reconstruction needs is small and known. This is defense in depth on top of contributor-side de-identification -- it is not a de-identification tool, and the OpenH-4D tooling does not claim to be one.",
+  "policy": "allowlist",
+  "keep": {
+    "identity": [
+      "0008,0016 SOPClassUID",
+      "0008,0018 SOPInstanceUID",
+      "0020,000D StudyInstanceUID",
+      "0020,000E SeriesInstanceUID",
+      "0020,0011 SeriesNumber",
+      "0020,0013 InstanceNumber",
+      "0010,0020 PatientID",
+      "0008,0060 Modality",
+      "0008,103E SeriesDescription",
+      "0002,0010 TransferSyntaxUID"
+    ],
+    "geometry": [
+      "0020,0032 ImagePositionPatient",
+      "0020,0037 ImageOrientationPatient",
+      "0020,0052 FrameOfReferenceUID",
+      "0028,0030 PixelSpacing",
+      "0018,0050 SliceThickness",
+      "0018,0088 SpacingBetweenSlices",
+      "0028,0010 Rows",
+      "0028,0011 Columns",
+      "0028,0002 SamplesPerPixel",
+      "0028,0004 PhotometricInterpretation",
+      "0028,0100 BitsAllocated",
+      "0028,0101 BitsStored",
+      "0028,0102 HighBit",
+      "0028,0103 PixelRepresentation",
+      "0028,1052 RescaleIntercept",
+      "0028,1053 RescaleSlope",
+      "0028,1054 RescaleType",
+      "0028,0008 NumberOfFrames"
+    ],
+    "timing_and_phase": [
+      "0020,0100 TemporalPositionIdentifier",
+      "0020,0105 NumberOfTemporalPositions",
+      "0020,0110 TemporalResolution",
+      "0018,1060 TriggerTime",
+      "0018,1090 CardiacNumberOfImages",
+      "0020,9241 NominalPercentageOfCardiacPhase",
+      "0018,9014 RespiratoryMotionCompensationTechnique",
+      "0020,0012 AcquisitionNumber",
+      "0008,0032 AcquisitionTime",
+      "0008,0033 ContentTime"
+    ],
+    "acquisition": [
+      "0008,0070 Manufacturer",
+      "0008,1090 ManufacturerModelName",
+      "0018,1020 SoftwareVersions",
+      "0018,0060 KVP",
+      "0018,1151 XRayTubeCurrent",
+      "0018,1152 Exposure",
+      "0018,1210 ConvolutionKernel",
+      "0018,0087 MagneticFieldStrength",
+      "0018,0080 RepetitionTime",
+      "0018,0081 EchoTime",
+      "0018,0050 SliceThickness",
+      "0018,1100 ReconstructionDiameter",
+      "0018,5100 PatientPosition",
+      "0018,1120 GantryDetectorTilt",
+      "0018,0020 ScanningSequence",
+      "0018,0021 SequenceVariant",
+      "0018,0022 ScanOptions",
+      "0018,0023 MRAcquisitionType"
+    ],
+    "ultrasound": [
+      "0018,6011 SequenceOfUltrasoundRegions",
+      "0018,1088 HeartRate",
+      "0018,1063 FrameTime",
+      "0028,0301 BurnedInAnnotation"
+    ]
+  },
+  "drop_note": "Everything else is removed, including but not limited to PatientName, PatientBirthDate, PatientSex, PatientAge, PatientAddress, PatientTelephoneNumbers, OtherPatientIDs, OtherPatientNames, AccessionNumber, StudyDate, StudyTime, SeriesDate, SeriesTime, ContentDate, InstitutionName, InstitutionAddress, InstitutionalDepartmentName, ReferringPhysicianName, PerformingPhysicianName, OperatorsName, StudyDescription, StudyID, RequestAttributesSequence, ImageComments, DeviceSerialNumber, and every private tag block.",
+  "keep_private_tags": false,
+  "keep_curve_and_overlay_data": false
+}

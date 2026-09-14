@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://open-h.org/openh-4d/schemas/patient/1.0",
+  "title": "OpenH-4D patient.json",
+  "description": "Auxiliary patient information, one per patient, living in <patient_id>_ehr/patient.json. Fields follow OpenH-4D RFP section 8 (Patient information).",
+  "type": "object",
+  "required": ["schema", "patient_id", "studies", "demographics", "reason_for_scan", "deidentification"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "openh-4d/patient/1.0" },
+    "patient_id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9-]{1,46}[0-9]$",
+      "description": "Must equal the directory name with '_ehr' removed."
+    },
+    "studies": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9-]{1,46}[0-9][A-Z]+$" },
+      "description": "Study directory names for this patient. Checked against the tree by verify_layout."
+    },
+
+    "demographics": {
+      "type": "object",
+      "required": ["age_years", "age_90_or_older", "sex"],
+      "additionalProperties": false,
+      "properties": {
+        "age_years": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 89,
+          "description": "HIPAA Safe Harbor caps reported age at 89; use age_90_or_older above that."
+        },
+        "age_90_or_older": { "type": "boolean" },
+        "sex": { "enum": ["F", "M", "other", "unknown"] },
+        "gender": { "type": ["string", "null"] },
+        "height_cm": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "weight_kg": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "bmi": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "ethnicity": { "type": ["string", "null"] }
+      }
+    },
+
+    "disease_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "primary_diagnosis": { "type": ["string", "null"] },
+        "codes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["system", "code"],
+            "additionalProperties": false,
+            "properties": {
+              "system": { "type": "string" },
+              "code": { "type": "string" }
+            }
+          }
+        },
+        "severity": { "type": ["string", "null"] },
+        "comorbidities": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "vitals_at_acquisition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "systolic_bp_mmhg": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "diastolic_bp_mmhg": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "heart_rate_bpm": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "respiratory_rate_bpm": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "spo2_percent": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+        "temperature_c": { "type": ["number", "null"] },
+        "measured_relative_to_scan": { "enum": ["before", "during", "after", "unknown", null] }
+      }
+    },
+
+    "treatment_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "description", "timing"],
+        "additionalProperties": false,
+        "properties": {
+          "type": { "enum": ["surgery", "medication", "radiation", "device", "other"] },
+          "description": { "type": "string" },
+          "timing": { "enum": ["pre_scan", "post_scan"] },
+          "days_relative_to_scan": {
+            "type": ["integer", "null"],
+            "description": "Negative before the scan, positive after. Null if unknown or suppressed."
+          },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+
+    "reason_for_scan": {
+      "type": "object",
+      "required": ["category"],
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "enum": [
+            "screening", "diagnosis", "surgical_planning", "treatment_planning",
+            "treatment_response", "follow_up", "research_only", "other"
+          ]
+        },
+        "description": { "type": "string" }
+      }
+    },
+
+    "deidentification": {
+      "type": "object",
+      "required": ["standard", "performed_by", "attestation"],
+      "additionalProperties": false,
+      "properties": {
+        "standard": { "enum": ["hipaa_safe_harbor", "hipaa_expert_determination", "gdpr_anonymized", "other"] },
+        "date_shift_applied": { "type": "boolean" },
+        "date_shift_offset_disclosed": { "type": "boolean" },
+        "performed_by": { "type": "string" },
+        "tooling": { "type": ["string", "null"] },
+        "attestation": { "type": "string", "minLength": 1 }
+      }
+    },
+
+    "extra": {
+      "type": "object",
+      "description": "Contributor-specific fields. Anything placed here must be described in the submission README.md."
+    }
+  }
+}

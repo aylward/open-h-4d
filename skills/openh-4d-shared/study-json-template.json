@@ -1,0 +1,170 @@
+{
+  "schema": "openh-4d/study/1.0",
+  "study_id": "STAN-0001A",
+  "patient_id": "STAN-0001",
+  "modality": "CT",
+  "organ": "heart",
+  "motion": "cardiac",
+  "protocol": "Retrospectively ECG-gated 4D CT",
+  "clinical_indication": "surgical planning",
+  "file_layout": "timepoint_volumes",
+  "n_timepoints": 10,
+  "timepoints": [
+    {
+      "index": 0,
+      "file": "t0000.nii.gz",
+      "phase_label": "0%",
+      "phase_type": "cardiac",
+      "phase_fraction": 0.0,
+      "trigger_time_ms": 0.0,
+      "acquisition_time_s": null
+    },
+    {
+      "index": 1,
+      "file": "t0001.nii.gz",
+      "phase_label": "10%",
+      "phase_type": "cardiac",
+      "phase_fraction": 0.1,
+      "trigger_time_ms": 83.3,
+      "acquisition_time_s": null
+    },
+    {
+      "index": 2,
+      "file": "t0002.nii.gz",
+      "phase_label": "20%",
+      "phase_type": "cardiac",
+      "phase_fraction": 0.2,
+      "trigger_time_ms": 166.6,
+      "acquisition_time_s": null
+    },
+    {
+      "index": 3,
+      "file": "t0003.nii.gz",
+      "phase_label": "30%",
+      "phase_type": "cardiac",
+      "phase_fraction": 0.3,
+      "trigger_time_ms": 249.9,
+      "acquisition_time_s": null
+    },
+    {
+      "index": 4,
+      "file": "t0004.nii.gz",
+      "phase_label": "40%",
+      "phase_type": "cardiac",
+      "phase_fraction": 0.4,
+      "trigger_time_ms": 333.2,
+      "acquisition_time_s": null
+    },
+    {
+      "index": 5,
+      "file": "t0005.nii.gz",
+      "phase_label": "50%",
+      "phase_type": "cardiac",
+      "phase_fraction": 0.5,
+      "trigger_time_ms": 416.5,
+      "acquisition_time_s": null
+    },
+    {
+      "index": 6,
+      "file": "t0006.nii.gz",
+      "phase_label": "60%",
+      "phase_type": "cardiac",
+      "phase_fraction": 0.6,
+      "trigger_time_ms": 499.8,
+      "acquisition_time_s": null
+    },
+    {
+      "index": 7,
+      "file": "t0007.nii.gz",
+      "phase_label": "70%",
+      "phase_type": "cardiac",
+      "phase_fraction": 0.7,
+      "trigger_time_ms": 583.1,
+      "acquisition_time_s": null
+    },
+    {
+      "index": 8,
+      "file": "t0008.nii.gz",
+      "phase_label": "80%",
+      "phase_type": "cardiac",
+      "phase_fraction": 0.8,
+      "trigger_time_ms": 666.4,
+      "acquisition_time_s": null
+    },
+    {
+      "index": 9,
+      "file": "t0009.nii.gz",
+      "phase_label": "90%",
+      "phase_type": "cardiac",
+      "phase_fraction": 0.9,
+      "trigger_time_ms": 749.7,
+      "acquisition_time_s": null
+    }
+  ],
+  "coverage": "full",
+  "coverage_notes": "",
+  "contrast": {
+    "used": true,
+    "agent": "iodinated",
+    "phase": "arterial"
+  },
+  "geometry": {
+    "in_plane_mm": [
+      0.78,
+      0.78
+    ],
+    "slice_spacing_mm": 1.0,
+    "matrix": [
+      512,
+      512,
+      240
+    ],
+    "temporal_resolution_ms": 83,
+    "orientation": "RAS"
+  },
+  "ct": {
+    "low_dose": false,
+    "kvp": 120,
+    "exposure_mas": 180,
+    "recon_kernel": "Bv40"
+  },
+  "mr": {
+    "sequence": null,
+    "field_strength_t": null,
+    "tr_ms": null,
+    "te_ms": null,
+    "other_sequences_included": []
+  },
+  "us": {
+    "source": null,
+    "probe": null,
+    "frame_rate_hz": null,
+    "vendor_decoder": null
+  },
+  "gating": {
+    "method": "retrospective_ecg",
+    "phase_source": "TemporalPositionIdentifier"
+  },
+  "annotations": {
+    "segmentations": [
+      {
+        "set": "chambers",
+        "files": "seg/t*_chambers.nii.gz",
+        "method": "human",
+        "labels_file": "seg/labels.json"
+      }
+    ],
+    "landmarks": [],
+    "categorizations": []
+  },
+  "derived": [],
+  "source": {
+    "original_format": "DICOM",
+    "converter": "dcm2niix v1.0.20260724",
+    "converter_args": "-z y -b y -f t%04d -o .",
+    "converted_at": null,
+    "n_source_files": 2400
+  },
+  "waivers": [],
+  "notes": "Annotated example of every study.json field. Copy it, then replace every value. Fields that are not applicable to your modality stay null rather than being deleted."
+}
