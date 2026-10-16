@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/open-h-4d-header.png" alt="Open-H-4D" width="100%">
+<img src="assets/open-h-4d-header-with-hyphen.png" alt="Open-H-4D" width="100%">
 
 # Open-H-4D
 
