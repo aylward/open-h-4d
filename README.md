@@ -5,7 +5,7 @@
 # Open-H-4D
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=for-the-badge)](LICENSE)
-[![Data](https://img.shields.io/badge/Data-CC%20BY%204.0-green.svg?style=for-the-badge)](https://creativecommons.org/licenses/by/4.0/)
+[![Data](https://img.shields.io/badge/Data-OpenMDW-green.svg?style=for-the-badge)](https://openmdw.ai/)
 
 *A collaborative collection of 4D cardiac and respiratory imaging, for training foundation models of physiological motion.*
 
@@ -15,24 +15,25 @@
 
 ## About
 
-Open-H-4D is an [Open-H.org](https://open-h.org) initiative to collect **4D data
-from at least 20,000 subjects** — patient details together with sequences of 3D
-images capturing cardiac and/or respiratory motion. Building on the
-OpenH-Embodiment video collection effort, it aligns leading institutions around a
-single openly licensed corpus of 4D CT, MRI and ultrasound.
+Open-H-4D is an [Open-H.org](https://open-h.org) initiative to collect **20,000
+total cases** of cardiac and/or respiratory motion, including real patient cases
+and simulated cases. Building on Open-H-Embodiment, it aligns leading institutions
+around a single openly licensed corpus. 4D CT, MRI and ultrasound images are
+prioritized; derived models, simulated motion data and other relevant data are
+also accepted through an open proposal category.
 
 The collected datasets will be freely available for academic and commercial use,
 and used to train and validate physics-informed and generative AI models of
 physiological motion. Beyond motion modelling, the data suits detecting imaging
 biomarkers that inform patient-specific physics parameters, training diagnostic
 models that incorporate physiological data, and simulating clinical signals such
-as ECG and spirometry.
+as EKG and spirometry as well as motion artifacts in 3D images.
 
 NVIDIA sponsors Open-H-4D by pre-processing all submissions and enabling free,
 open access to the dataset, foundation model weights and training code on project
 completion.
 
-Released on Hugging Face under **CC BY 4.0**.
+Released on Hugging Face under the [**OpenMDW**](https://openmdw.ai/) license.
 
 ## This repository
 
@@ -48,29 +49,46 @@ specification of what a submission looks like.
 
 ## How to participate
 
-1. **Review the RFP** — [Call for Proposals](assets/Open-H-4D_Call_For_Proposals.pdf)
+1. **Review the CFP** — [Call for Proposals](assets/Open-H-4D_Call_For_Proposals.pdf)
    for scope, eligibility, data requirements and review criteria.
-2. **Submit a proposal** — describing the data you would contribute, per RFP §8,
-   via the [submission form](https://forms.gle/Y9pUAHhG7xYCWDoD7).
+2. **Submit a proposal** — describing the data you would contribute, per CFP §8,
+   via the [submission form](https://forms.gle/Y9pUAHhG7xYCWDoD7). Pre-proposals
+   are welcome for early feedback on data relevance, open-category contributions
+   and approval or licensing feasibility. Full proposals are PDF, at most 5 pages
+   excluding CVs, and propose at least 20 cases for case-based datasets.
 3. **Prepare your data** — using the tooling here. The
    [layout specification](skills/open-h-4d-shared/layout-spec.md) is the contract.
 4. **Co-author the release** — contributing teams are named co-authors on both
-   the dataset publication and the follow-up foundation-model publication, and
-   receive early access to evaluation checkpoints and the dataset itself.
+   the dataset publication and the follow-up foundation-model publication, receive
+   early access to evaluation checkpoints and the dataset itself, and are
+   recognized in the joint releases and public announcements.
 
 ## Scope
 
-4D **CT, MRI or ultrasound** of:
+Contributions may be proposed for either or both task groups:
 
 - **cardiac motion**
 - **lung respiratory motion**
 
-The organizers anticipate expanding later to other modalities — dynamic X-ray
-fluoroscopy — and other anatomies and functions, such as brain perfusion.
+in the following categories:
 
-Corpus targets: a 40/40/20 split across CT, MRI and ultrasound, and 50/50 between
-lung and cardiac. These guide steering-group priorities; they are not a bar any
-individual submission is measured against.
+- **Images** (preferred) — time-resolved 3D CT, MRI or ultrasound sequences with
+  relevant patient metadata.
+- **Derived models** — segmentations, anatomical surfaces or meshes, and motion or
+  deformation models; may be proposed when source images cannot be shared,
+  provided the contributor holds the required rights and approvals.
+- **Simulated motion data** — time-resolved motion from computational models,
+  clearly distinguished from measured motion.
+- **Open category** — other relevant data, such as paired 3D CT and ultrasound,
+  complementary measurements, other modalities or other anatomies.
+
+Planning targets: 20,000 cases, about 80% images (16,000), 10% derived models
+(2,000) and 10% simulated motion data (2,000). Within images, about 40% CT, 40%
+MRI and 20% ultrasound, and about 50/50 between lung and cardiac. These guide
+steering-group priorities and may be adjusted to the proposals received; they are
+not a bar any individual submission is measured against.
+
+The tooling in this repository currently covers the image category.
 
 ## Submission layout in one screen
 
@@ -80,7 +98,7 @@ always starts at `A`:
 ```
 <submission-root>/
 ├── README.md              the data card (Hugging Face renders it)
-├── LICENSE                CC BY 4.0
+├── LICENSE                OpenMDW
 ├── manifest.json          generated index
 ├── STAN-0001A/            one 4D study
 │   ├── study.json
@@ -94,7 +112,7 @@ always starts at `A`:
 
 Images are `.nii.gz` or DICOM. The letter suffix starts at `A` even for a patient
 with one study, so adding a second later never renames the first. The full rules,
-including the sidecar schemas and the RFP conformance thresholds, are in the
+including the sidecar schemas and the CFP conformance thresholds, are in the
 [layout specification](skills/open-h-4d-shared/layout-spec.md).
 
 ## Quickstart
@@ -166,7 +184,7 @@ native-Windows clone intact. See [`AGENTS.md`](AGENTS.md).
 ## De-identification
 
 All human-subject data must be de-identified to **HIPAA Safe Harbor** standards
-or equivalent (RFP §10). The obligation is the contributing institution's.
+or equivalent (CFP §12). The obligation is the contributing institution's.
 
 **The tooling here verifies de-identification; it does not perform it.** Use a
 mature implementation — RSNA CTP, or any DICOM PS3.15 Basic Application Level
@@ -188,33 +206,31 @@ verifier rejects any submission containing one. See
 
 | Milestone | Date |
 |---|---|
-| RFP released | September 27, 2026 |
-| Proposal submission deadline | November 1, 2026 |
-| Data collection window | October 1 – December 31, 2027 |
-| Data cleanup and standardization | January 1 – February 1, 2027 |
-| Model training and validation | February 1 – March 15, 2027 |
-| First public release | April 2027 |
+| CFP released | September 27, 2026 |
+| Proposal submission deadline | December 1, 2026 |
+| Data collection window | December 1, 2026 – March 1, 2027 |
+| Data cleanup and standardization | March 1 – May 1, 2027 |
+| Model training and validation | May 1 – July 1, 2027 |
+| First public dataset and model release | August 2027 |
 
-> **These dates are inconsistent in the published RFP and are not settled.**
-> Collection runs through December 2027 while cleanup, training and release all
-> fall in early 2027, and §6 separately promises release "no later than March
-> 2027" — which contradicts the April date independently of the year problem.
-> Confirm with the organizers before relying on any of them.
+A public information meeting for prospective proposers is planned approximately
+one month after MICCAI 2026; the date will be announced separately.
 
 ## Steering group
 
 | Role | Name | Affiliation |
 |---|---|---|
 | Academic Lead | Alison Marsden, PhD | Stanford |
-| Academic Lead | Paul Segars, PhD | Duke University |
 | Generative AI Lead | Can Zhao, PhD | NVIDIA |
 | Industry Lead | Mark Palmer, MD, PhD | Ansys, part of Synopsys |
-| Clinical Lead | Matthew Jolley, MD | |
-| Co-Chair | Mathias Ubernath, PhD | |
+| Co-Chair | Mathias Unberath, PhD | Johns Hopkins University |
+| Clinical Lead | Matthew Jolley, MD | Children's Hospital of Philadelphia |
+| Academic Lead | Paul Segars, PhD | Duke University |
+| Academic Lead | Qi Dou, PhD | The Chinese University of Hong Kong |
 | Co-Chair | Stephen Aylward, PhD | NVIDIA |
 
-Founding members: Ryan Moore, MD (Cincinnati Children's Hospital Medical Center);
-Jeff Bodner, PhD (Medtronic).
+Founding members: Jeff Bodner (Medtronic); Ryan Moore, MD (Cincinnati Children's
+Hospital); Xiaoxiao Li, PhD (UBC).
 
 ## Development
 
@@ -237,5 +253,5 @@ pull request — "runs natively on all three" only stays true if it is checked.
 ## License
 
 Code in this repository is licensed under the [Apache License 2.0](LICENSE). The
-released dataset is licensed under
-[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+released dataset and model weights are licensed under
+[OpenMDW](https://openmdw.ai/).
