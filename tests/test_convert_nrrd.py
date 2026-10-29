@@ -286,6 +286,77 @@ def test_directory_with_mismatched_grids_is_refused(tmp_path):
         convert(source, tmp_path / "STAN-0001A")
 
 
+@pytest.mark.parametrize(
+    "field,reference,different",
+    [
+        ("spacing", (0.6, 0.6, 0.7), (0.8, 0.6, 0.7)),
+        ("origin", (0.0, 0.0, 0.0), (10.0, 0.0, 0.0)),
+        ("origin", (1000.0, 0.0, 0.0), (1000.005, 0.0, 0.0)),
+        (
+            "direction",
+            (1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0),
+            (0.0, -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0),
+        ),
+    ],
+    ids=["spacing", "origin", "large-origin-small-offset", "direction"],
+)
+def test_directory_with_same_size_but_different_geometry_is_refused(
+    tmp_path, field, reference, different
+):
+    import SimpleITK as sitk
+
+    source = tmp_path / "frames"
+    source.mkdir()
+    for name, geometry in [("a.nrrd", reference), ("b.nrrd", different)]:
+        image = sitk.GetImageFromArray(np.ones((4, 5, 6), dtype=np.int16))
+        getattr(image, f"Set{field.title()}")(geometry)
+        sitk.WriteImage(image, str(source / name))
+
+    output = tmp_path / "STAN-0001A"
+    with pytest.raises(NrrdConvertError, match=rf"b.nrrd has {field} .*one voxel grid"):
+        convert(source, output)
+    assert not output.exists(), "geometry must be checked before writing any output"
+
+
+def test_directory_preserves_matching_nondefault_geometry(tmp_path):
+    import SimpleITK as sitk
+
+    source = tmp_path / "frames"
+    source.mkdir()
+    for index in range(2):
+        image = sitk.GetImageFromArray(np.full((4, 5, 6), index + 1, dtype=np.int16))
+        image.SetSpacing((0.6, 0.8, 1.2))
+        image.SetOrigin((100.0, -200.0, 300.0))
+        image.SetDirection((0.0, -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0))
+        sitk.WriteImage(image, str(source / f"frame{index}.nrrd"))
+
+    expected_affine = affine_from_image(read_source(source / "frame0.nrrd"))
+    output = tmp_path / "STAN-0001A"
+    convert(source, output)
+    for index in range(2):
+        volume = nib.load(str(output / f"t{index:04d}.nii.gz"))
+        np.testing.assert_allclose(volume.affine, expected_affine, rtol=0, atol=1e-6)
+        np.testing.assert_array_equal(np.asanyarray(volume.dataobj), index + 1)
+
+
+def test_directory_tolerates_geometry_roundoff(tmp_path):
+    import SimpleITK as sitk
+
+    source = tmp_path / "frames"
+    source.mkdir()
+    for index in range(2):
+        image = sitk.GetImageFromArray(np.ones((4, 5, 6), dtype=np.int16))
+        image.SetSpacing((0.6 + index * 1e-8, 0.6, 0.7))
+        image.SetOrigin((100.0 + index * 1e-8, 0.0, 0.0))
+        angle = index * 1e-8
+        image.SetDirection(
+            (np.cos(angle), -np.sin(angle), 0.0, np.sin(angle), np.cos(angle), 0.0, 0.0, 0.0, 1.0)
+        )
+        sitk.WriteImage(image, str(source / f"frame{index}.nrrd"))
+
+    assert convert(source, tmp_path / "STAN-0001A")["n_timepoints"] == 2
+
+
 def test_empty_directory_is_a_clear_error(tmp_path):
     source = tmp_path / "frames"
     source.mkdir()

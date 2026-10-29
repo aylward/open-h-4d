@@ -121,16 +121,19 @@ For a directory, **files sorted by name become the time order**, and their names
 become the phase labels. If your filenames do not sort into acquisition order —
 `frame1, frame10, frame2` — zero-pad them first.
 
-Every volume in a directory must share one voxel grid; a mismatch is refused
-rather than resampled.
+Every volume in a directory must share one voxel grid: size, spacing, origin and
+direction must agree. Spacing and origin are compared with an absolute tolerance
+of 1e-6 mm, and direction cosines with an absolute tolerance of 1e-6, to allow
+roundoff. A mismatch is refused before any output is written, rather than resampled.
 
 ## Failure modes
 
 **`holds a single volume, not a 4D sequence`** — a 3D file. If the time points
 are separate files, point the tool at the directory containing them.
 
-**`has size (...) but (...) has (...)`** — volumes in a directory are on
-different grids. Fix at the source; resampling to agree hides which one is wrong.
+**`has size/spacing/origin/direction (...) but (...) has (...)`** — volumes in a
+directory are on different grids. The error names the differing field and both
+files. Fix at the source; resampling to agree hides which one is wrong.
 
 **`SimpleITK could not read ...`** — not a format SimpleITK handles, or a
 corrupted file. Note `.seq.nrrd` is just a naming convention; the file is an

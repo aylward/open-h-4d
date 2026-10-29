@@ -42,6 +42,10 @@ LPS_TO_RAS = np.diag([-1.0, -1.0, 1.0, 1.0])
 #: Extensions SimpleITK reads that make sense as a 4D or 3D medical volume.
 READABLE_SUFFIXES = (".nrrd", ".nhdr", ".mha", ".mhd", ".nii", ".nii.gz", ".vtk")
 
+#: Absolute tolerance for spacing/origin (mm) and direction cosines. A relative
+#: tolerance would allow larger offsets merely because an origin is far from zero.
+GEOMETRY_TOLERANCE = 1e-6
+
 #: Slicer records the sequence's index values here; they become phase labels.
 SLICER_INDEX_VALUES_KEY = "axis 0 index values"
 SLICER_INDEX_TYPE_KEY = "axis 0 index type"
@@ -183,6 +187,16 @@ def convert_directory(source: Path, study_dir: Path) -> tuple[list[Path], dict[s
                 f"{path.name} has size {image.GetSize()} but {files[0].name} has "
                 f"{reference_size}. Every time point of a study must share one voxel grid."
             )
+        for field, actual, expected in (
+            ("spacing", image.GetSpacing(), first.GetSpacing()),
+            ("origin", image.GetOrigin(), first.GetOrigin()),
+            ("direction", image.GetDirection(), first.GetDirection()),
+        ):
+            if not np.allclose(actual, expected, rtol=0, atol=GEOMETRY_TOLERANCE):
+                raise NrrdConvertError(
+                    f"{path.name} has {field} {actual} but {files[0].name} has "
+                    f"{expected}. Every time point of a study must share one voxel grid."
+                )
         volumes, _ = split_timepoints(image)
         stacked.append(volumes[0])
 
